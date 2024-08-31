@@ -9,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-mongoose.connect('mongodb+srv://Balaji:1234@cluster0.lsbl5ui.mongodb.net/Chatroom?retryWrites=true&w=majority&appName=Cluster0');
+mongoose.connect(process.env.MONGODB_URL);
 
 
 app.set('view engine', 'ejs');
@@ -29,20 +29,19 @@ io.on('connection', (socket) => {
 
     socket.join(room);
 
-    // Load chat history
     const chatHistory = await Message.find({ room }).sort({ time: 1 });
     socket.emit('loadMessages', chatHistory);
 
-    // Notify others of the new user
     socket.broadcast.to(room).emit('message', {
       username: 'System',
       text: `${username} has joined the chat`,
+      time: new Date(),
     });
 
     updateRoomUsers(room);
 
     socket.on('chatMessage', async (msg) => {
-      const message = new Message({ username, room, text: msg });
+      const message = new Message({ username, room, text: msg, time: new Date() });
       await message.save();
 
       io.to(room).emit('message', message);
@@ -59,6 +58,7 @@ io.on('connection', (socket) => {
       io.to(room).emit('message', {
         username: 'System',
         text: `${user.username} has left the chat`,
+        time: new Date(), 
       });
 
       updateRoomUsers(room);
