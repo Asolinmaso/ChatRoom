@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatroom</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Join Room Section -->
+  <div id="join-container" class="join-container">
+    <h1>Join Chatroom</h1>
+    <input id="username" type="text" placeholder="Enter your name" required />
+    <input id="room" type="text" placeholder="Enter room name" required />
+    <button id="join-btn">Join</button>
+  </div>
+
+  <!-- Chat Section (Initially Hidden) -->
+  <div id="chat-container" class="chat-container" style="display: none;">
+    <div class="chat-header">
+      <h2>Room: <span id="room-name"></span></h2>
+      <h4>Users: <span id="users"></span></h4>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div id="typing"></div>
+    <form id="chat-form">
+      <input id="msg" type="text" placeholder="Enter message..." autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const joinBtn = document.getElementById('join-btn');
+    const joinContainer = document.getElementById('join-container');
+    const chatContainer = document.getElementById('chat-container');
+    const chatMessages = document.getElementById('chat-messages');
+    const typing = document.getElementById('typing');
+    const roomName = document.getElementById('room-name');
+    const usersList = document.getElementById('users');
+    let username, room;
+
+    joinBtn.addEventListener('click', () => {
+      username = document.getElementById('username').value;
+      room = document.getElementById('room').value;
+
+      if (username && room) {
+        // Join the room
+        socket.emit('joinRoom', { username, room });
+
+        // Hide the join form and show the chat
+        joinContainer.style.display = 'none';
+        chatContainer.style.display = 'block';
+      }
+    });
+
+    socket.on('loadMessages', (messages) => {
+      messages.forEach(message => {
+        const div = document.createElement('div');
+        div.classList.add('message');
+        
+        if (message.username === username) {
+          div.classList.add('self');
+        } else {
+          div.classList.add('other');
+        }
+
+        div.innerHTML = `
+          <div class="meta">${message.username} - ${new Date(message.time).toLocaleTimeString()}</div>
+          <p>${message.text}</p>
+        `;
+
+        chatMessages.appendChild(div);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    socket.on('message', message => {
+      const div = document.createElement('div');
+      div.classList.add('message');
+      
+      if (message.username === username) {
+        div.classList.add('self');
+      } else {
+        div.classList.add('other');
+      }
+
+      div.innerHTML = `
+        <div class="meta">${message.username} - ${new Date(message.time).toLocaleTimeString()}</div>
+        <p>${message.text}</p>
+      `;
+
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    document.getElementById('chat-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = document.getElementById('msg').value;
+      socket.emit('chatMessage', msg);
+      document.getElementById('msg').value = '';
+    });
+
+    document.getElementById('msg').addEventListener('keypress', () => {
+      socket.emit('typing');
+    });
+
+    socket.on('typing', user => {
+      typing.innerText = `${user} is typing...`;
+      setTimeout(() => {
+        typing.innerText = '';
+      }, 1000);
+    });
+
+    socket.on('roomUsers', ({ room, users }) => {
+      roomName.innerText = room;
+      usersList.innerHTML = users.join(', ');
+    });
+  </script>
+</body>
+</html>

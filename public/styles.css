@@ -1,0 +1,157 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #000; /* Dark background */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-container {
+  width: 500px;
+  background-color: #333; /* Dark container background */
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.chat-header {
+  background-color: #000;
+  color: #fff;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #444;
+}
+
+.chat-header h2,
+.chat-header h4 {
+  margin: 5px 0;
+}
+
+.chat-messages {
+  padding: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #222; /* Darker message area */
+  border-bottom: 1px solid #444;
+}
+
+.message {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  max-width: 70%; /* Limit the width of messages */
+}
+
+.message .meta {
+  font-size: 12px;
+  color: #fff;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.message p {
+  margin: 0;
+  padding: 10px 15px;
+  background: #888; /* Lighter grey for message background */
+  color: #fff;
+  word-wrap: break-word;
+}
+
+.message.self {
+  align-self: flex-end;
+  background: green;
+  color: #000;
+}
+
+.message.self p {
+  background: #007bff; /* Blue background for self messages */
+  color: #fff;
+}
+
+.message.other {
+  align-self: flex-start;
+  background: blue;
+  color: #fff;
+}
+
+.message.other p {
+  background: white; 
+  color: black;
+  /* Light grey for other messages */
+}
+
+#typing {
+  padding: 10px;
+  font-style: italic;
+  color: #aaa;
+}
+
+#chat-form {
+  display: flex;
+  border-top: 1px solid #444;
+  background-color: #333; /* Form area matches the container */
+}
+
+#msg {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  border-radius: 0;
+  background-color: #444; /* Input background */
+  color: #fff;
+}
+
+#chat-form button {
+  padding: 15px;
+  background-color: #888; /* Button background */
+  color: #000;
+  border: none;
+  cursor: pointer;
+}
+
+#chat-form button:hover {
+  background-color: #777; /* Button hover state */
+}
+
+.join-container {
+  width: 500px;
+  margin: 20px auto;
+  padding: 15px;
+  background: #333;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+.join-container input,
+.join-container button {
+  width: 100px;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #eee;
+  color: #000;
+}
+
+.join-container button {
+  background-color: #ddd;
+  cursor: pointer;
+}
+
+.join-container button:hover {
+  background-color: #ccc;
+}
+
+.join-container input {
+  background-color: #fff;
+  color: #000;
+}
+
+#room-name,
+#users {
+  color: #fff;
+  font-weight: bold;
+}
